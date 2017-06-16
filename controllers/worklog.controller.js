@@ -6,6 +6,15 @@ var options = {
 'Content-Type':'application/json'}
 };
 module.exports = function(app) {
+ // cors solving
+
+ app.all('/*', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With, Content-Type, Authorization");
+  res.header("Access-Control-Allow-Methods", "GET, POST","PUT");
+  next();
+});
+
  app.get('/', function(request, response) {
 https.request(options, function(httpResponse) {
   var str = '';
@@ -17,10 +26,8 @@ https.request(options, function(httpResponse) {
 
   //the whole response has been recieved, so we just print it out here
   httpResponse.on('end', function () {
-    console.log(str);
     response.send(str);
   });
 }).end();
- //response.render('index.html', { pageCountMessage : null});
   });
 };
