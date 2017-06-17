@@ -13,8 +13,17 @@ exports.getAllIssue = function (data, callBack) {
     };
     let str = '';
     let $this = this;
+ 
+    if(data.toDate !== ''){
+        options.path+='%20and%20updated<'+data.toDate;
+    }
     https.request(options, function (httpResponse) {
         //another chunk of data has been recieved, so append it to `str`
+        if(httpResponse.statusCode === 401)
+        {
+            callBack({ 'users': [], isValid :false });
+            return;
+        }
         httpResponse.on('data', function (chunk) {
             str += chunk;
         });
@@ -34,14 +43,14 @@ exports.getAllIssue = function (data, callBack) {
                             let combinedIssues = [];
                             combinedIssues = moreThan20log.concat(allIssue.lessThan21Logs);
                             let users = issueHelper.mapUserAndIssue(combinedIssues);
-                            callBack({ 'users': users });
+                            callBack({ 'users': users, isValid :true });
                         }
                     }
                     );
             }
             if (moreThan20log.length === 0) {
                 let users = issueHelper.mapUserAndIssue(allIssue.lessThan21Logs);
-                callBack({ 'users': users });
+                callBack({ 'users': users, isValid :true });
             }
         });
     }).end();
