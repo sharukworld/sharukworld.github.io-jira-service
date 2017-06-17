@@ -1,8 +1,9 @@
 let https = require('https');
-let issueHelper = require('../helper/issueHelper')
-
+let issueHelper = require('../helper/issueHelper');
+var Promise = require('promise');
+let option = {};
 exports.getAllIssue = function (data, callBack) {
-    let options = {
+    options = {
         host: data.jiraDomain,
         path: '/rest/api/2/search?maxResults=2000&fields=key,summary,worklog&jql=project=' + data.project + '%20and%20updated>' + data.fromDate,
         headers: {
@@ -11,6 +12,7 @@ exports.getAllIssue = function (data, callBack) {
         }
     };
     let str = '';
+    let $this = this;
     https.request(options, function (httpResponse) {
         //another chunk of data has been recieved, so append it to `str`
         httpResponse.on('data', function (chunk) {
@@ -18,10 +20,48 @@ exports.getAllIssue = function (data, callBack) {
         });
         //the whole response has been recieved, so we just print it out here
         httpResponse.on('end', function () {
-            //response.send(str);
-            //console.log('inside end', str);
-            let users = issueHelper.getAllIssuesHelper(str);
-            callBack({'users':users});
+            let currentThis = this;
+            let allIssue = issueHelper.getAllIssuesHelper(str);
+            let moreThan20log = allIssue.moreThan20Logs;
+
+            for (let i = 0; i < moreThan20log.length; i++) {
+                $this.getIssueIndetail(
+                    moreThan20log[i].key
+                ).then(
+                    res => {
+                        moreThan20log[i].fields.worklog = JSON.parse(res);
+                        if (i === moreThan20log.length - 1) {
+                            let combinedIssues = [];
+                            combinedIssues = moreThan20log.concat(allIssue.lessThan21Logs);
+                            let users = issueHelper.mapUserAndIssue(combinedIssues);
+                            callBack({ 'users': users });
+                        }
+                    }
+                    );
+            }
+            if (moreThan20log.length === 0) {
+                let users = issueHelper.mapUserAndIssue(allIssue.lessThan21Logs);
+                callBack({ 'users': users });
+            }
         });
     }).end();
+}
+
+exports.getIssueIndetail = function (key) {
+    options.path = '/rest/api/2/issue/' + key + '/worklog';
+    let str = '';
+    return new Promise(function (resolve, reject) {
+        https.request(options, function (httpResponse) {
+            //another chunk of data has been recieved, so append it to `str`
+            httpResponse.on('data', function (chunk) {
+                str += chunk;
+            });
+            //the whole response has been recieved, so we just print it out here
+            httpResponse.on('end', function () {
+                //callback(str);
+                resolve(str);
+            });
+        }).end();
+    });
+
 }
