@@ -20,12 +20,12 @@ exports.mapUserAndIssue = function (data) {
   let userList = [];
   data.forEach(element => {
     element.fields.worklog.worklogs.forEach(el => {
-      let firstDate = global.data.fromDate;
-      let endDate = global.data.toDate;
-      let firstDateCompare = new Date(firstDate + ' 00:00:00');
-      let endDateCompare = new Date(endDate + ' 00:00:00');
+      let firstDate = global.data.startDateCompare;
+      let endDate = global.data.endDateCompare;
+      let firstDateCompare = new Date(firstDate);
+      let endDateCompare = new Date(endDate);
       let currentDate = new Date(el.created);
-      console.log('current date',currentDate,'firstDateCompare',firstDateCompare,'firstDateCompare',endDateCompare,'endDateCompare')
+      console.log(currentDate,' ',firstDateCompare,' ',endDateCompare,'' , (currentDate >= firstDateCompare && currentDate<endDateCompare))
       if((currentDate >= firstDateCompare && currentDate<endDateCompare)){
       let user = userList.find(x => (x.accountId == el.author.accountId))
       if (user != null) {
