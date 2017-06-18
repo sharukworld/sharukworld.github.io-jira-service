@@ -11,8 +11,8 @@ exports.getAllIssuesHelper = function (data) {
     }
   });
   return {
-    'moreThan20Logs':moreThan20Logs,
-    'lessThan21Logs':lessThan21Logs
+    'moreThan20Logs': moreThan20Logs,
+    'lessThan21Logs': lessThan21Logs
   };
 }
 
@@ -25,26 +25,26 @@ exports.mapUserAndIssue = function (data) {
       let firstDateCompare = new Date(firstDate);
       let endDateCompare = new Date(endDate);
       let currentDate = new Date(el.created);
-      console.log(currentDate,' ',firstDateCompare,' ',endDateCompare,'' , (currentDate >= firstDateCompare && currentDate<endDateCompare))
-      if((currentDate >= firstDateCompare && currentDate<endDateCompare)){
-      let user = userList.find(x => (x.accountId == el.author.accountId))
-      if (user != null) {
-        if (user.worklogs == null)
-          user['worklogs'] = [];
-        
-         el['key'] = element.key;
-        user.timeSpentSeconds+=el.timeSpentSeconds;
-        user.worklogs.push(el);
+      console.log(currentDate, ' ', firstDateCompare, ' ', endDateCompare, '', (currentDate >= firstDateCompare && currentDate < endDateCompare))
+      if ((currentDate >= firstDateCompare && currentDate < endDateCompare)) {
+        let user = userList.find(x => (x.accountId == el.author.accountId))
+        if (user != null) {
+          if (user.worklogs == null)
+            user['worklogs'] = [];
+
+          el['key'] = element.key;
+          user.timeSpentSeconds += el.timeSpentSeconds;
+          user.worklogs.push(el);
+        }
+        else {
+          el.author['worklogs'] = [];
+          el['key'] = element.key;
+          el.author.worklogs.push(el);
+          el.author['timeSpentSeconds'] = el.timeSpentSeconds;
+          userList.push(el.author);
+        }
       }
-      else {
-        el.author['worklogs'] = [];
-        el['key'] = element.key;
-        el.author.worklogs.push(el);
-        el.author['timeSpentSeconds'] = el.timeSpentSeconds;
-        userList.push(el.author);
-      }
-    }
-  });
+    });
   });
   return userList;
 }
