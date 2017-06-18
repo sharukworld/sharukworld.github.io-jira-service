@@ -24,24 +24,7 @@ module.exports = function (app) {
     });
 
     app.get('/', function (request, response) {
-        options.headers.Authorization = request.get('Authorization');
-        options.host = request.get('host');
-        let project = request.get('project');
-        let fromDate = request.get('fromDate');
-        let toDate = request.get('toDate');
-        https.request(options, function (httpResponse) {
-            var str = '';
-
-            //another chunk of data has been recieved, so append it to `str`
-            httpResponse.on('data', function (chunk) {
-                str += chunk;
-            });
-
-            //the whole response has been recieved, so we just print it out here
-            httpResponse.on('end', function () {
-                response.send(str);
-            });
-        }).end();
+        response.send('application online');
     });
     app.post('/worklogs', function (request, response)  {
         let users = [];
