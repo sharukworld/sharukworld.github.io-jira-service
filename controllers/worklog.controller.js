@@ -45,6 +45,7 @@ module.exports = function (app) {
     });
     app.post('/worklogs', function (request, response)  {
         let users = [];
+        global.data = request.body;
      issue.getAllIssue(request.body, function(userList){
        response.send(CircularJSON.stringify(userList));
      });
