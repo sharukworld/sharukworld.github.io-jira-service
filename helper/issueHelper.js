@@ -25,7 +25,7 @@ exports.mapUserAndIssue = function (data) {
       let firstDateCompare = new Date(firstDate + ' 00:00:00');
       let endDateCompare = new Date(endDate + ' 00:00:00');
       let currentDate = new Date(el.created);
-      //console.log('el',el.created, 'satisfy', (currentDate >= firstDateCompare && currentDate<endDateCompare));
+      console.log('current date',currentDate,'firstDateCompare',firstDateCompare,'firstDateCompare',endDateCompare,'endDateCompare')
       if((currentDate >= firstDateCompare && currentDate<endDateCompare)){
       let user = userList.find(x => (x.accountId == el.author.accountId))
       if (user != null) {
@@ -33,9 +33,7 @@ exports.mapUserAndIssue = function (data) {
           user['worklogs'] = [];
         
          el['key'] = element.key;
-         console.log('before',user.timeSpentSeconds);
-         user.timeSpentSeconds+=el.timeSpentSeconds;
-           console.log('after',user.timeSpentSeconds);
+        user.timeSpentSeconds+=el.timeSpentSeconds;
         user.worklogs.push(el);
       }
       else {
